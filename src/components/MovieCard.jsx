@@ -10,14 +10,15 @@ import { UseContext } from "../context/AuthContext";
 const MovieCard = () => {
   const [allMovies = [], refetch, isLoading, isPending] = useAllMovie();
   const useAxios = useAxiosSecure();
-  const { searchMovie, setSearchMovie } = useContext(UseContext);
+  const { searchMovie } = useContext(UseContext);
 
   // Filtering criteria states
   const [watchFilter, setWatchFilter] = useState("all");
 
   // Modal active states tracker
-  const [ratingTarget, setRatingTarget] = useState(null); // stores { id, title, currentRating }
+  const [ratingTarget, setRatingTarget] = useState(null); // stores { id, title, currentRating, currentReview }
   const [newRating, setNewRating] = useState(5);
+  const [newReview, setNewReview] = useState(""); // Stores custom text reviews
   const [deleteTarget, setDeleteTarget] = useState(null); // stores { id, title }
 
   // Combined movie items pipeline array parser
@@ -32,6 +33,7 @@ const MovieCard = () => {
     if (watchFilter === "unwatched") {
       return matchesSearch && !movie.isWatched;
     }
+    refetch()
     return matchesSearch;
   });
 
@@ -64,29 +66,33 @@ const MovieCard = () => {
     }
   };
 
-  // Action: Open review modal
-  const handleOpenRatingModal = (id, title, currentRating) => {
+  // Action: Open review and rating modal
+  const handleOpenRatingModal = (id, title, currentRating, currentReview) => {
     setRatingTarget({ id, title });
     setNewRating(currentRating || 5);
+    setNewReview(currentReview || ""); // Prepopulate existing review text if any
   };
 
-  // Action: Submit updated rating payload data
+  // Action: Submit updated rating and review payload data
   const handleUpdateRatingSubmit = async () => {
     if (!ratingTarget) return;
     try {
       const res = await useAxios.patch(`/movies/${ratingTarget.id}`, {
         rating: parseFloat(newRating),
+        review: newReview.trim(), // Append review text payload
       });
+      refetch(); // Refresh the movie list after update
       if (res.data) {
-        refetch();
-        toast.success(`Updated ${ratingTarget.title} rating to ★${newRating}`, {
+        toast.success(`Updated review data for ${ratingTarget.title}`, {
           position: "top-center",
           autoClose: 800,
         });
+        refetch();
         setRatingTarget(null);
+        setNewReview("");
       }
     } catch (err) {
-      toast.error("Failed to update rating metric assets.");
+      toast.error("Failed to update rating and review assets.");
     }
   };
 
@@ -135,7 +141,6 @@ const MovieCard = () => {
 
           {/* Interactive Filtering and Metrics Control Panel */}
           <div className="flex items-center gap-3 w-full sm:w-auto self-stretch sm:self-auto justify-between sm:justify-end">
-            {/* DaisyUI Premium Select Custom Component */}
             <div className="relative group">
               <select
                 value={watchFilter}
@@ -143,7 +148,7 @@ const MovieCard = () => {
                 className="select select-sm appearance-none rounded-xl border border-white/10 bg-[#11141b]/80 text-gray-300 text-xs font-semibold tracking-wide transition-all duration-300 focus:outline-none focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/10 pl-4 pr-10 cursor-pointer hover:border-white/20 hover:bg-[#161a23]"
               >
                 <option value="all" className="bg-[#11141b] text-gray-300 py-2">
-                  A🎬 All Movies
+                  🎬 All Movies
                 </option>
                 <option
                   value="watched"
@@ -159,7 +164,6 @@ const MovieCard = () => {
                 </option>
               </select>
 
-              {/* Custom Elegant Chevron Icon Indicator */}
               <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-400 group-hover:text-purple-400 transition-colors duration-300">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -178,7 +182,6 @@ const MovieCard = () => {
               </div>
             </div>
 
-            {/* Total Badge Counter */}
             <div className="badge badge-md border border-purple-500/30 bg-purple-500/10 text-purple-400 font-medium px-3 py-3.5 rounded-xl shrink-0">
               {filterMoves.length} Displayed
             </div>
@@ -193,16 +196,15 @@ const MovieCard = () => {
               className="group relative flex flex-col rounded-2xl border border-white/10 bg-[#11141b]/40 backdrop-blur-md overflow-hidden hover:border-purple-500/40 transition-all duration-500 hover:-translate-y-1 shadow-xl hover:delay-300"
               data-aos="zoom-in"
             >
-              {/* Media Asset Wrapper (Poster URL Container) */}
+              {/* Media Asset Wrapper */}
               <div className="relative aspect-[14/19] w-full overflow-hidden bg-gray-900">
                 <img
                   src={movie.posterUrl}
                   alt={`${movie.title} Movie Poster Cover`}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
-                />
+                ></img>
 
-                {/* Floating Glassmorphism Semi-Transparent "Watched" Tag Overlay */}
                 {movie.isWatched && (
                   <div className="absolute top-3 right-3 z-10 animate-fade-in">
                     <span className="px-2.5 py-1 text-[11px] font-semibold tracking-wide rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 backdrop-blur-md shadow-lg">
@@ -211,7 +213,6 @@ const MovieCard = () => {
                   </div>
                 )}
 
-                {/* Ambient Dark Poster Shadow Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#11141b] via-[#11141b]/10 to-transparent" />
               </div>
 
@@ -221,13 +222,12 @@ const MovieCard = () => {
                   <h3 className="font-bold text-base text-white tracking-wide truncate group-hover:text-purple-400 transition-colors">
                     {movie.title}
                   </h3>
-                  {/* Interactive Stars Review Click Handler Trigger */}
                   <button
                     onClick={() =>
-                      handleOpenRatingModal(movie._id, movie.title, movie.rating)
+                      handleOpenRatingModal(movie._id, movie.title, movie.rating, movie.review)
                     }
                     className="flex items-center gap-1 text-xs text-amber-400 bg-amber-400/5 hover:bg-amber-400/20 px-2 py-1 rounded-md border border-amber-400/20 shrink-0 transition-all active:scale-95"
-                    title="Update Asset Rating"
+                    title="Update Asset Rating & Review"
                   >
                     <span>★</span>
                     <span className="font-semibold text-gray-200">
@@ -236,14 +236,26 @@ const MovieCard = () => {
                   </button>
                 </div>
 
-                {/* Subtext: Genre & Release Year Payload elements */}
-                <div className="flex items-center gap-2 text-xs text-gray-400 font-medium mb-4">
+                {/* Subtext: Genre & Release Year */}
+                <div className="flex items-center gap-2 text-xs text-gray-400 font-medium mb-3">
                   <span>{movie.genre}</span>
                   <span className="w-1 h-1 rounded-full bg-gray-600" />
                   <span>{movie.releaseYear}</span>
                 </div>
 
-                {/* Distinct Grid Card Layout Interface Buttons */}
+                {/* Dynamic User Review Field View Render Box */}
+                <div className="mb-4 min-h-[40px] flex-grow">
+                  {movie.review ? (
+                    <div className="rounded-xl bg-white/5 border border-white/5 p-2.5 text-xs text-gray-300 italic line-clamp-2 relative group-hover:line-clamp-none transition-all duration-300">
+                      <span className="text-purple-400 font-bold not-italic block text-[10px] uppercase tracking-wider mb-0.5">Your Review:</span>
+                      "{movie.review}"
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-gray-500 italic px-1">No written review added yet.</p>
+                  )}
+                </div>
+
+                {/* Card Control Buttons */}
                 <div className="flex gap-2 mt-auto pt-2 border-t border-white/5">
                   <button
                     onClick={() => handleToggleWatched(movie._id, movie.title)}
@@ -298,7 +310,7 @@ const MovieCard = () => {
                 <span className="absolute inline-flex h-full w-full rounded-2xl bg-purple-500/20 opacity-75 animate-ping duration-1000" />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 animate-pulse text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]"
+                  className="h-8 w-8 text-purple-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -320,31 +332,19 @@ const MovieCard = () => {
               Your cinematic tracker pipeline is currently empty. Try tweaking
               your search string or filter selection criteria.
             </p>
-
-            <div className="mt-5 flex items-center justify-center gap-2">
-              <button
-                onClick={() => {
-                  setSearchMovie("");
-                  setWatchFilter("all");
-                }}
-                className="btn btn-xs rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-gray-300 normal-case font-medium tracking-wide transition-all px-3.5 py-1"
-              >
-                Reset Filters
-              </button>
-            </div>
           </div>
         )}
 
         {/* ========================================================= */}
-        {/* MODAL 1: PREMIUM COMPACT ACTION DIALOG FOR RATING SYSTEM */}
+        {/* MODAL 1: UPDATE RATING & WRITTEN REVIEW DIALOG */}
         {/* ========================================================= */}
         {ratingTarget && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
             <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#11141b] p-6 shadow-2xl space-y-4">
               <div>
-                <h3 className="text-lg font-bold text-white">Update Rating</h3>
+                <h3 className="text-lg font-bold text-white">Review & Rate</h3>
                 <p className="text-xs text-gray-400 mt-0.5 truncate">
-                  Assign score parameter index metrics for{" "}
+                  Share your thoughts on{" "}
                   <span className="text-purple-400 font-medium">
                     {ratingTarget.title}
                   </span>
@@ -352,7 +352,7 @@ const MovieCard = () => {
               </div>
 
               {/* Slider Controller */}
-              <div className="space-y-2 py-2">
+              <div className="space-y-2">
                 <div className="flex justify-between text-xs font-semibold px-1">
                   <span className="text-gray-400">Score Range</span>
                   <span className="text-amber-400 flex items-center gap-1">
@@ -370,10 +370,27 @@ const MovieCard = () => {
                 />
               </div>
 
+              {/* Written Review Textarea field */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-gray-400 px-1 block">
+                  Your Review
+                </label>
+                <textarea
+                  value={newReview}
+                  onChange={(e) => setNewReview(e.target.value)}
+                  placeholder="Write a brief review about your tracking experience..."
+                  rows={3}
+                  className="w-full rounded-xl bg-[#161922] border border-white/10 p-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all resize-none"
+                />
+              </div>
+
               {/* Action Buttons */}
               <div className="flex justify-end gap-2 pt-1">
                 <button
-                  onClick={() => setRatingTarget(null)}
+                  onClick={() => {
+                    setRatingTarget(null);
+                    setNewReview("");
+                  }}
                   className="btn btn-xs rounded-lg px-3 bg-neutral-800 hover:bg-neutral-700 text-gray-300 border-none normal-case"
                 >
                   Cancel
@@ -382,7 +399,7 @@ const MovieCard = () => {
                   onClick={handleUpdateRatingSubmit}
                   className="btn btn-xs rounded-lg px-4 bg-purple-600 hover:bg-purple-500 text-white border-none normal-case shadow-md shadow-purple-600/10"
                 >
-                  Save Metrics
+                  Save Changes
                 </button>
               </div>
             </div>

@@ -15,6 +15,7 @@ const AddMovieForm = () => {
     register,
     handleSubmit,
     reset,
+    
     formState: { errors },
   } = useForm({
     defaultValues: {
