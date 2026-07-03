@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { useAxiosSecure } from '../hooks/useAxios';
+import { toast } from 'react-toastify';
 
-const AddMovieForm = ({ onAddMovie }) => {
+const AddMovieForm = () => {
   // Controlled state fields matching the required /movies payload architecture
   const [formData, setFormData] = useState({
     title: '',
@@ -10,7 +12,7 @@ const AddMovieForm = ({ onAddMovie }) => {
     releaseYear: '',
     posterUrl: ''
   });
-
+  const useAxios = useAxiosSecure();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -43,19 +45,22 @@ const AddMovieForm = ({ onAddMovie }) => {
       posterUrl: formData.posterUrl.trim()
     };
 
-    // Simulate network delay for a high-end SaaS feel
-    setTimeout(() => {
-      onAddMovie(moviePayload);
-      
-      // Reset form controls
+    const res = await useAxios.post('/movies', moviePayload);
+    console.log(res.data);
+
+    if (res.data.insertedId) {
+      toast.success(`${formData.title} added successfully!`, {
+        position: "top-center",
+        autoClose: 800, 
+      });
+      setLoading(false);
       setFormData({
         title: '',
         genre: '',
         releaseYear: '',
         posterUrl: ''
       });
-      setLoading(false);
-    }, 800);
+    }
   };
 
   return (
@@ -73,7 +78,7 @@ const AddMovieForm = ({ onAddMovie }) => {
             Track New Cinema Asset
           </h2>
           <p className="text-xs text-gray-400 mt-1">
-            Dispatch a payload parameters payload index to the <code className="text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded text-[11px]">POST /movies</code> pipeline.
+            Dispatch a payload parameters payload index to the <span className="text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded text-[11px]">POST /movies</span> pipeline.
           </p>
         </div>
 

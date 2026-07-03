@@ -115,7 +115,7 @@ const MovieCard = () => {
                   <div className="flex items-center gap-1 text-xs text-amber-400 bg-amber-400/5 px-2 py-0.5 rounded-md border border-amber-400/10 shrink-0">
                     <span>★</span>
                     <span className="font-semibold text-gray-200">
-                      {movie.rating || "N/A"}
+                      {movie.rating || 0}
                     </span>
                   </div>
                 </div>
