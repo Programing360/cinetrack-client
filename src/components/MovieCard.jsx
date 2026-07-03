@@ -1,79 +1,59 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 import AOS from "aos";
 import "aos/dist/aos.css";
 import useAllMovie from "../api/movies";
-import { useAxiosSecure} from "../hooks/useAxios";
+import { useAxiosSecure } from "../hooks/useAxios";
 import { toast } from "react-toastify";
 
-// export const initialMovies = [
-//   {
-//     id: 1,
-//     title: "Chronos Echo",
-//     genre: "Sci-Fi",
-//     releaseYear: 2026,
-//     posterUrl: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&q=80",
-//     rating: 4.9,
-//     isWatched: true
-//   },
-//   {
-//     id: 2,
-//     title: "Dune: Part Two",
-//     genre: "Sci-Fi",
-//     releaseYear: 2024,
-//     posterUrl: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=500&q=80",
-//     rating: 4.8,
-//     isWatched: true
-//   },
-//   {
-//     id: 3,
-//     title: "The Batman",
-//     genre: "Action",
-//     releaseYear: 2022,
-//     posterUrl: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&q=80",
-//     rating: 4.7,
-//     isWatched: false
-//   },
-//   {
-//     id: 4,
-//     title: "Parasite",
-//     genre: "Thriller",
-//     releaseYear: 2019,
-//     posterUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=500&q=80",
-//     rating: 4.8,
-//     isWatched: false
-//   }
-// ];
 const MovieCard = () => {
   const [allMovies = [], refetch, isLoading, isPending, error] = useAllMovie();
-  //   const [movies, setMovies] = useState(allMovies);
+ 
   const useAxios = useAxiosSecure();
-  console.log(allMovies);
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
   }, []);
 
   // Action: Toggle Watched status flag
-  const handleToggleWatched = async(id, title) => {
+  const handleToggleWatched = async (id, title) => {
     const movieToUpdate = await useAxios.patch(`/movies/${id}`, {
       isWatched: !allMovies.find((movie) => movie._id === id).isWatched,
     });
     const updatedMovie = movieToUpdate.data;
-    if(updatedMovie) {
+    if (updatedMovie) {
       refetch();
-      toast.success(`${title} marked as ${updatedMovie.isWatched ? "Watched" : "Unwatched"}`, {
+      toast.success(
+        `${title} marked as ${updatedMovie.isWatched ? "Watched" : "Unwatched"}`,
+        {
+          position: "top-center",
+          autoClose: 800,
+        },
+      );
+    }
+  };
+
+  // Action: Delete film target entry from collections payload
+  const handleDeleteMovie = async (id, title) => {
+    const res = await useAxios.delete(`/movies/${id}`);
+    if (res.data) {
+      refetch();
+      toast.success(`${title} deleted successfully!`, {
         position: "top-center",
         autoClose: 800,
       });
     }
 
-  };
-
-  // Action: Delete film target entry from collections payload
-  const handleDeleteMovie = (id) => {
     // setMovies(prevMovies => prevMovies.filter(movie => movie.id !== id));
   };
+
+  if (isLoading || isPending) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#090b0e] text-gray-100 p-4 md:p-8">
@@ -100,7 +80,7 @@ const MovieCard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {allMovies.map((movie) => (
             <div
-              key={movie.id}
+              key={movie._id}
               className="group relative flex flex-col rounded-2xl border border-white/10 bg-[#11141b]/40 backdrop-blur-md overflow-hidden hover:border-purple-500/40 transition-all duration-500 hover:-translate-y-1 shadow-xl hover:delay-300"
               data-aos="zoom-in"
             >
@@ -161,7 +141,7 @@ const MovieCard = () => {
                   </button>
 
                   <button
-                    onClick={() => handleDeleteMovie(movie._id)}
+                    onClick={() => handleDeleteMovie(movie._id, movie.title)}
                     className="btn btn-sm btn-square rounded-xl bg-red-950/30 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/20 transition-all duration-200"
                     title="Delete Entry"
                   >

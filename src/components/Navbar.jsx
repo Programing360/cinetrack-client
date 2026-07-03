@@ -29,7 +29,7 @@ const Navbar = () => {
               </Link>
             </li>
             <li>
-              <Link to="/addMovie" className="px-4 py-2 rounded-xl hover:text-white hover:bg-white/5 transition">
+              <Link to="/add-movie" className="px-4 py-2 rounded-xl hover:text-white hover:bg-white/5 transition">
                 Add Movie
               </Link>
             </li>
