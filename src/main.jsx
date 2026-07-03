@@ -7,6 +7,7 @@ import "aos/dist/aos.css";
 import Aos from "aos";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
+import AuthProvider from "./provider/AuthProvider.jsx";
 
 // Aos.init();
 Aos.init({
@@ -16,7 +17,9 @@ Aos.init({
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <QueryClientProvider client={new QueryClient()}>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </QueryClientProvider>
     <ToastContainer
       position="top-center"

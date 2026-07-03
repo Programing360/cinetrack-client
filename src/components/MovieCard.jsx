@@ -1,16 +1,17 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 
 import AOS from "aos";
 import "aos/dist/aos.css";
 import useAllMovie from "../api/movies";
 import { useAxiosSecure } from "../hooks/useAxios";
 import { toast } from "react-toastify";
+import { UseContext } from "../context/AuthContext";
 
 const MovieCard = () => {
   const [allMovies = [], refetch, isLoading, isPending, error] = useAllMovie();
- 
+  const { searchMovie } = useContext(UseContext);
   const useAxios = useAxiosSecure();
-
+  console.log(searchMovie);
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
   }, []);
