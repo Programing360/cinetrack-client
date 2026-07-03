@@ -1,25 +1,36 @@
 import { useContext, useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router"; // Using useLocation to match ongoing routes
 import { UseContext } from "../context/AuthContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation(); // Track active route changes
 
   const { searchMovie, setSearchMovie } = useContext(UseContext);
-  console.log(searchMovie);
 
   const handleSearch = (value) => {
     setSearchMovie(value);
+  };
+
+  // Helper mapping rule configuration to evaluate styling states dynamically
+  const getLinkClass = (path, baseClasses) => {
+    const isActive = location.pathname === path;
+    return `${baseClasses} transition-all duration-300 relative overflow-hidden group ${
+      isActive 
+        ? "text-purple-400 bg-purple-500/10 border border-purple-500/20 font-semibold shadow-lg shadow-purple-500/5" 
+        : "text-gray-400 hover:text-white hover:bg-white/5 border border-transparent"
+    }`;
   };
 
   return (
     <div className="sticky top-0 z-50 px-4 py-3" data-aos="fade-down">
       {/* Glassmorphic Navbar Shell */}
       <div className="navbar max-w-7xl mx-auto rounded-2xl border border-white/10 bg-[#0d0f14]/70 backdrop-blur-md shadow-2xl text-white px-4 md:px-6">
+        
         {/* Navbar Start: Brand Logo */}
         <div className="navbar-start">
           <Link
-            to="#dashboard"
+            to="/"
             className="text-xl md:text-2xl font-bold tracking-tight bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent hover:opacity-90 transition"
           >
             Cine<span className="text-purple-400">Track</span>
@@ -28,45 +39,36 @@ const Navbar = () => {
 
         {/* Navbar Center: Desktop Navigation Links */}
         <div className="navbar-center hidden lg:flex">
-          <ul className="flex items-center gap-1 px-1 text-sm font-medium text-gray-400">
+          <ul className="flex items-center gap-2 px-1 text-sm font-medium">
             <li>
-              <Link
-                to="/"
-                className="px-4 py-2 rounded-xl text-white bg-white/10 border border-white/5 transition"
-              >
+              <Link to="/" className={getLinkClass("/", "px-4 py-2 rounded-xl")}>
                 Dashboard
+                {/* Micro-Interaction Sliding Indicator Line */}
+                <span className={`absolute bottom-0 left-0 h-[2px] bg-purple-500 transition-all duration-300 ${location.pathname === "/" ? "w-full" : "w-0 group-hover:w-full"}`} />
               </Link>
             </li>
             <li>
-              <Link
-                to="/add-movie"
-                className="px-4 py-2 rounded-xl hover:text-white hover:bg-white/5 transition"
-              >
+              <Link to="/add-movie" className={getLinkClass("/add-movie", "px-4 py-2 rounded-xl")}>
                 Add Movie
+                <span className={`absolute bottom-0 left-0 h-[2px] bg-purple-500 transition-all duration-300 ${location.pathname === "/add-movie" ? "w-full" : "w-0 group-hover:w-full"}`} />
               </Link>
             </li>
             <li>
-              <Link
-                to="#explore"
-                className="px-4 py-2 rounded-xl hover:text-white hover:bg-white/5 transition"
-              >
+              <Link to="/explore" className={getLinkClass("/explore", "px-4 py-2 rounded-xl")}>
                 Explore
+                <span className={`absolute bottom-0 left-0 h-[2px] bg-purple-500 transition-all duration-300 ${location.pathname === "/explore" ? "w-full" : "w-0 group-hover:w-full"}`} />
               </Link>
             </li>
             <li>
-              <Link
-                to="#analytics"
-                className="px-4 py-2 rounded-xl hover:text-white hover:bg-white/5 transition"
-              >
+              <Link to="/analytics" className={getLinkClass("/analytics", "px-4 py-2 rounded-xl")}>
                 Analytics
+                <span className={`absolute bottom-0 left-0 h-[2px] bg-purple-500 transition-all duration-300 ${location.pathname === "/analytics" ? "w-full" : "w-0 group-hover:w-full"}`} />
               </Link>
             </li>
             <li>
-              <Link
-                to="#settings"
-                className="px-4 py-2 rounded-xl hover:text-white hover:bg-white/5 transition"
-              >
+              <Link to="/settings" className={getLinkClass("/settings", "px-4 py-2 rounded-xl")}>
                 Settings
+                <span className={`absolute bottom-0 left-0 h-[2px] bg-purple-500 transition-all duration-300 ${location.pathname === "/settings" ? "w-full" : "w-0 group-hover:w-full"}`} />
               </Link>
             </li>
           </ul>
@@ -119,7 +121,7 @@ const Navbar = () => {
             </svg>
           </button>
 
-          {/* Notification Indicator Indicator */}
+          {/* Notification Indicator */}
           <div className="dropdown dropdown-end">
             <button
               tabIndex={0}
@@ -147,12 +149,10 @@ const Navbar = () => {
             </button>
             <ul
               tabIndex={0}
-              className="dropdown-content menu p-2 shadow-2xl bg-[#13161c] border border-white/10 rounded-xl w-52 text-sm mt-2"
+              className="dropdown-content menu p-2 shadow-2xl bg-[#13161c] border border-white/10 rounded-xl w-52 text-sm mt-2 transition-all duration-200"
             >
               <li>
-                <Link className="hover:bg-white/5 py-2">
-                  9 new movies tracked
-                </Link>
+                <Link className="hover:bg-white/5 py-2">9 new movies tracked</Link>
               </li>
               <li>
                 <Link className="hover:bg-white/5 py-2">System up to date</Link>
@@ -193,10 +193,10 @@ const Navbar = () => {
             </ul>
           </div>
 
-          {/* Mobile Hamburg Menu Button (DaisyUI Dropdown style alternative) */}
+          {/* Mobile Hamburg Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="btn btn-ghost btn-circle btn-sm text-gray-400 hover:text-white hover:bg-white/5 lg:hidden"
+            className="btn btn-ghost btn-circle btn-sm text-gray-400 hover:text-white hover:bg-white/5 lg:hidden transition-transform duration-300"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -209,6 +209,7 @@ const Navbar = () => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
+                className="transition-all duration-300"
                 d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h7"}
               />
             </svg>
@@ -216,72 +217,51 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Drawer Overlay / Navigation Panel */}
-      {isOpen && (
-        <div
-          className="lg:hidden fixed inset-x-4 mt-2 p-4 rounded-xl border border-white/10 bg-[#0d0f14]/95 backdrop-blur-xl shadow-2xl z-40 transition-all duration-300 ease-in-out"
-          data-aos="zoom-in-up"
-          data-aos-duration="300"
-        >
-          <ul className="flex flex-col gap-2 text-sm text-gray-300">
-            <li>
-              <Link
-                to="#dashboard"
-                onClick={() => setIsOpen(false)}
-                className="block px-4 py-2.5 rounded-lg bg-white/10 text-white font-medium"
-              >
-                Dashboard
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="#mylist"
-                onClick={() => setIsOpen(false)}
-                className="block px-4 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition"
-              >
-                My List
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="#explore"
-                onClick={() => setIsOpen(false)}
-                className="block px-4 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition"
-              >
-                Explore
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="#analytics"
-                onClick={() => setIsOpen(false)}
-                className="block px-4 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition"
-              >
-                Analytics
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="#settings"
-                onClick={() => setIsOpen(false)}
-                className="block px-4 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition"
-              >
-                Settings
-              </Link>
-            </li>
-            {/* Mobile Search Field */}
-            <li className="pt-2 border-t border-white/10 mt-2 sm:hidden">
-              <input
-                type="text"
-                value={searchMovie}
-                onChange={(e) => handleSearch(e.target.value)}
-                placeholder="Search movies..."
-                className="w-full px-4 py-2 bg-[#161920] border border-white/10 rounded-lg text-xs text-white focus:outline-none"
-              />
-            </li>
-          </ul>
-        </div>
-      )}
+      {/* Mobile Menu Drawer Overlay */}
+      <div 
+        className={`lg:hidden fixed inset-x-4 mt-2 p-4 rounded-xl border border-white/10 bg-[#0d0f14]/95 backdrop-blur-xl shadow-2xl z-40 transition-all duration-300 transform origin-top ${
+          isOpen ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none"
+        }`}
+      >
+        <ul className="flex flex-col gap-1 text-sm font-medium">
+          <li>
+            <Link to="/" onClick={() => setIsOpen(false)} className={getLinkClass("/", "block px-4 py-2.5 rounded-lg")}>
+              Dashboard
+            </Link>
+          </li>
+          <li>
+            <Link to="/add-movie" onClick={() => setIsOpen(false)} className={getLinkClass("/add-movie", "block px-4 py-2.5 rounded-lg")}>
+              Add Movie
+            </Link>
+          </li>
+          <li>
+            <Link to="/explore" onClick={() => setIsOpen(false)} className={getLinkClass("/explore", "block px-4 py-2.5 rounded-lg")}>
+              Explore
+            </Link>
+          </li>
+          <li>
+            <Link to="/analytics" onClick={() => setIsOpen(false)} className={getLinkClass("/analytics", "block px-4 py-2.5 rounded-lg")}>
+              Analytics
+            </Link>
+          </li>
+          <li>
+            <Link to="/settings" onClick={() => setIsOpen(false)} className={getLinkClass("/settings", "block px-4 py-2.5 rounded-lg")}>
+              Settings
+            </Link>
+          </li>
+          
+          {/* Mobile Search Input Field */}
+          <li className="pt-2 border-t border-white/10 mt-2 sm:hidden">
+            <input
+              type="text"
+              value={searchMovie}
+              onChange={(e) => handleSearch(e.target.value)}
+              placeholder="Search movies..."
+              className="w-full px-4 py-2 bg-[#161920] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-purple-500 transition-all"
+            />
+          </li>
+        </ul>
+      </div>
     </div>
   );
 };
