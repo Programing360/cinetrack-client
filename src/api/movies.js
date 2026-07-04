@@ -26,25 +26,3 @@ const useAllMovie = () => {
 };
 
 export default useAllMovie;
-
-// const updateMovie = (id, updateData) => {
-//       const axiosSecure = useAxiosSecure();
-
-//       const {data: updatedMovie} = useQuery({
-//         queryKey: ["movies", id],
-//         queryFn: async () => {
-//             try {
-//         const response = await axiosSecure.put(`/movies/${id}`, updateData);
-//         return response.data;
-
-//         } catch (error) {
-//         console.error("Error updating movie:", error);
-//         throw error;
-//     }
-//         }
-//         })
-
-    
-// }
-
-// export default updateMovie;

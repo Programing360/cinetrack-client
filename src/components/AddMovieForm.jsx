@@ -15,7 +15,7 @@ const AddMovieForm = () => {
     register,
     handleSubmit,
     reset,
-    
+
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -61,9 +61,9 @@ const AddMovieForm = () => {
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto p-1" data-aos="fade-up">
+    <div className="w-full max-w-xl mx-auto p-1" data-aos="fade-up min-h-screen ">
       {/* Outer Glow Wrapper Frame */}
-      <div className="relative rounded-2xl border border-white/10 bg-[#11141b]/60 backdrop-blur-md p-6 md:p-8 shadow-2xl overflow-hidden">
+      <div className="relative rounded-2xl border border-white/10 bg-[#11141b]/60 backdrop-blur-md p-6 md:p-8 shadow-2xl overflow-hidden my-20">
         {/* Subtle Ambient Decorative Neon Blur */}
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
         <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />

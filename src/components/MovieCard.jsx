@@ -33,7 +33,7 @@ const MovieCard = () => {
     if (watchFilter === "unwatched") {
       return matchesSearch && !movie.isWatched;
     }
-    refetch()
+ 
     return matchesSearch;
   });
 
