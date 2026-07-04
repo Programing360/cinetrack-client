@@ -9,8 +9,8 @@
 
 A sleek, full-stack MERN-style application designed for movie enthusiasts. **CineTrack** allows users to discover, log, track, rate, and review their personal movie collections through a modern, responsive user interface.
 
-🔗 **Live Frontend:** [https://your-vercel-link.vercel.app](https://your-vercel-link.vercel.app)  
-📡 **Production API:** [https://your-render-api.onrender.com](https://your-render-api.onrender.com)
+🔗 **Live Frontend:** https://cinetrack-client.vercel.app 
+📡 **Production API:** https://cinetrack-server.onrender.com
 
 ---
 
@@ -48,6 +48,10 @@ A sleek, full-stack MERN-style application designed for movie enthusiasts. **Cin
 *   **Utilities:** CORS, Dotenv, Express Validator (Backend validation)
 
 ---
+
+## 🔗 API Documentation
+The complete API documentation for this project is available via Postman:
+👉 [View API Documentation on Postman](আপনার_পোস্টম্যান_পাবলিক_লিংক_এখানে)
 
 ## 📁 Project Structure
 
