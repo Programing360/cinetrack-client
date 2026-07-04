@@ -20,11 +20,11 @@ const MovieCard = () => {
   const [newRating, setNewRating] = useState(5);
   const [newReview, setNewReview] = useState(""); // Stores custom text reviews
   const [deleteTarget, setDeleteTarget] = useState(null); // stores { id, title }
-
+  console.log(allMovies);
   // Combined movie items pipeline array parser
   const filterMoves = allMovies.filter((movie) => {
-    const matchesSearch = movie.title
-      .toLowerCase()
+    const matchesSearch = movie?.title
+      ?.toLowerCase()
       .includes(searchMovie.toLowerCase());
 
     if (watchFilter === "watched") {
@@ -33,7 +33,7 @@ const MovieCard = () => {
     if (watchFilter === "unwatched") {
       return matchesSearch && !movie.isWatched;
     }
- 
+
     return matchesSearch;
   });
 
@@ -224,7 +224,12 @@ const MovieCard = () => {
                   </h3>
                   <button
                     onClick={() =>
-                      handleOpenRatingModal(movie._id, movie.title, movie.rating, movie.review)
+                      handleOpenRatingModal(
+                        movie._id,
+                        movie.title,
+                        movie.rating,
+                        movie.review,
+                      )
                     }
                     className="flex items-center gap-1 text-xs text-amber-400 bg-amber-400/5 hover:bg-amber-400/20 px-2 py-1 rounded-md border border-amber-400/20 shrink-0 transition-all active:scale-95"
                     title="Update Asset Rating & Review"
@@ -247,11 +252,15 @@ const MovieCard = () => {
                 <div className="mb-4 min-h-[40px] flex-grow">
                   {movie.review ? (
                     <div className="rounded-xl bg-white/5 border border-white/5 p-2.5 text-xs text-gray-300 italic line-clamp-2 relative group-hover:line-clamp-none transition-all duration-300">
-                      <span className="text-purple-400 font-bold not-italic block text-[10px] uppercase tracking-wider mb-0.5">Your Review:</span>
+                      <span className="text-purple-400 font-bold not-italic block text-[10px] uppercase tracking-wider mb-0.5">
+                        Your Review:
+                      </span>
                       "{movie.review}"
                     </div>
                   ) : (
-                    <p className="text-[11px] text-gray-500 italic px-1">No written review added yet.</p>
+                    <p className="text-[11px] text-gray-500 italic px-1">
+                      No written review added yet.
+                    </p>
                   )}
                 </div>
 
@@ -356,7 +365,11 @@ const MovieCard = () => {
                 <div className="flex justify-between text-xs font-semibold px-1">
                   <span className="text-gray-400">Score Range</span>
                   <span className="text-amber-400 flex items-center gap-1">
-                    ★ <span className="text-sm font-bold text-white">{newRating}</span> / 5.0
+                    ★{" "}
+                    <span className="text-sm font-bold text-white">
+                      {newRating}
+                    </span>{" "}
+                    / 5.0
                   </span>
                 </div>
                 <input
