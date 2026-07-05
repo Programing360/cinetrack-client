@@ -5,11 +5,12 @@ import "aos/dist/aos.css";
 import { useAxiosSecure } from "../hooks/useAxios";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
+import useAllMovie from "../api/movies";
 
 const AddMovieForm = () => {
   const useAxios = useAxiosSecure();
   const [loading, setLoading] = useState(false);
-
+ const [, refetch] = useAllMovie();
   // Initializing React Hook Form parameters
   const {
     register,
@@ -32,7 +33,7 @@ const AddMovieForm = () => {
 
   // Action: Triggered only if React Hook Form client-side validation passes
   const onSubmit = async (data) => {
-    // setLoading(true);
+    setLoading(true);
 
     // Formulating payload architecture according to POST /movies requirements
     const moviePayload = {
@@ -50,6 +51,8 @@ const AddMovieForm = () => {
           position: "top-center",
           autoClose: 800,
         });
+
+        refetch()
         reset(); // Clear all fields gracefully
       }
     } catch (error) {

@@ -20,9 +20,8 @@ const MovieCard = () => {
   const [newRating, setNewRating] = useState(5);
   const [newReview, setNewReview] = useState(""); // Stores custom text reviews
   const [deleteTarget, setDeleteTarget] = useState(null); // stores { id, title }
-  console.log(allMovies);
   // Combined movie items pipeline array parser
-  const filterMoves = allMovies.filter((movie) => {
+  const filterMoves = allMovies?.filter((movie) => {
     const matchesSearch = movie?.title
       ?.toLowerCase()
       .includes(searchMovie.toLowerCase());
@@ -190,7 +189,7 @@ const MovieCard = () => {
 
         {/* Responsive CSS Grid Layout */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filterMoves.map((movie) => (
+          {filterMoves?.map((movie) => (
             <div
               key={movie._id}
               className="group relative flex flex-col rounded-2xl border border-white/10 bg-[#11141b]/40 backdrop-blur-md overflow-hidden hover:border-purple-500/40 transition-all duration-500 hover:-translate-y-1 shadow-xl hover:delay-300"
